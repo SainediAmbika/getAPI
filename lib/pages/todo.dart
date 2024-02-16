@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../controller/api/todo_controller.dart';
+
 class TodoPage extends StatelessWidget {
-  const TodoPage({super.key});
+  TodoPage({super.key});
   @override
+  TodoController todoCntrl = TodoController();
   Widget build(BuildContext context) {
     TextEditingController textController = TextEditingController();
     void addNewTodo(TextEditingController textEditingController) {

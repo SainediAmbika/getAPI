@@ -6,43 +6,45 @@ import '../controller/api/todo_controller.dart';
 class TodoPage extends StatelessWidget {
   TodoPage({super.key});
   @override
-  TodoController todoCntrl = TodoController();
   Widget build(BuildContext context) {
     TextEditingController textController = TextEditingController();
-    void addNewTodo(TextEditingController textEditingController) {
-      Get.defaultDialog(
-        title: "Enter new task ♥️",
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
+    TodoController todoCntrl = Get.put(TodoController());
+    void MyBottomSheet() {
+      Get.bottomSheet(Container(
+        padding: EdgeInsets.all(30),
+        decoration: BoxDecoration(color: Colors.white),
+        height: 250,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Expanded(
-                    child: TextFormField(
-                  controller: textController,
-                  decoration: InputDecoration(hintText: "Enter task"),
-                ))
-              ],
-            ),
-            SizedBox(
-              width: 30,
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                OutlinedButton(
+                Expanded(
+                  child: TextFormField(
+                    controller: textController,
+                    decoration: InputDecoration(hintText: "Enter a task"),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Row(
+              children: [
+                ElevatedButton(
                   onPressed: () {
                     Get.back();
+                    textController.clear();
                   },
-                  child: Text("Cancel"),
-                ),
-                SizedBox(
-                  width: 30,
+                  child: Text("CANCEL"),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    print(textController.text);
+                    todoCntrl.postData(textController.text.toString());
                     Get.back();
+                    textController.clear();
                   },
                   child: Text("SAVE"),
                 ),
@@ -50,213 +52,270 @@ class TodoPage extends StatelessWidget {
             ),
           ],
         ),
-      );
+      ));
     }
 
-    void editTodo(TextEditingController textEditingController) {
-      Get.defaultDialog(
-        title: "Edit task",
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                    child: TextFormField(
-                  controller: textController,
-                  decoration: InputDecoration(hintText: "Edit task"),
-                ))
-              ],
-            ),
-            SizedBox(
-              width: 30,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                OutlinedButton(
-                  onPressed: () {
-                    Get.back();
-                  },
-                  child: Text("Cancel"),
-                ),
-                SizedBox(
-                  width: 30,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    print(textController.text);
-                    Get.back();
-                  },
-                  child: Text("SAVE"),
-                ),
-              ],
-            ),
-          ],
-        ),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.deepPurple[500],
-        title: Container(
-          child: Text(
-            "T O D O",
-            style: TextStyle(
-              color: Colors.white,
-            ),
-          ),
-        ),
-      ),
-      bottomNavigationBar: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          InkWell(
-            onTap: () {
-              addNewTodo(textController);
-            },
-            child: Container(
-              margin: EdgeInsets.all(10),
-              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              decoration: BoxDecoration(color: Colors.deepPurple[500], borderRadius: BorderRadius.circular(10)),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.add,
-                    size: 30,
-                    color: Colors.white,
-                  ),
-                  SizedBox(
-                    width: 30,
-                  ),
-                  Text(
-                    "ADD NEW",
-                    style:
-                        TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.all(10.0),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(30.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                Text(
-                  "All Todos",
-                  style: TextStyle(fontSize: 18, color: Colors.black45),
-                ),
-              ],
+            SizedBox(
+              height: 50,
             ),
-            Expanded(
-                child: ListView.builder(
-              itemBuilder: (context, index) {
-                return Container(
-                  decoration: BoxDecoration(
-                    color: Colors.deepPurple[500],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  padding: EdgeInsets.all(10),
-                  margin: EdgeInsets.all(10),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.add_circle,
-                                color: Colors.white,
-                                size: 30,
-                              ),
-                              SizedBox(
-                                width: 30,
-                              ),
-                              Text(
-                                "Make video on Getx",
-                                style: TextStyle(fontSize: 20, color: Colors.white),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              IconButton(
-                                onPressed: () {
-                                  editTodo(textController);
-                                },
-                                icon: Icon(
-                                  Icons.edit,
-                                  color: Colors.white,
-                                  size: 30,
-                                ),
-                              ),
-                              IconButton(
-                                onPressed: () {
-                                  Get.defaultDialog(
-                                    title: "Delete task",
-                                    content: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Row(
-                                          children: [
-                                            Text("Do you want to delete"),
-                                          ],
-                                        ),
-                                        SizedBox(
-                                          width: 30,
-                                        ),
-                                        Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: [
-                                            OutlinedButton(
-                                              onPressed: () {
-                                                Get.back();
-                                              },
-                                              child: Text("NO"),
+            Text(
+              "Task",
+              style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            // Container(
+            //   padding: EdgeInsets.all(10),
+            //   decoration: BoxDecoration(
+            //     borderRadius: BorderRadius.circular(10),
+            //     color: Colors.blue,
+            //   ),
+            //   child: Icon(
+            //     Icons.add,
+            //     size: 35,
+            //   ),
+            // ),
+            SizedBox(
+              height: 550,
+              child: SingleChildScrollView(
+                child: InkWell(
+                    onTap: () {
+                      MyBottomSheet();
+                    },
+                    child: Obx(
+                      () => todoCntrl.isLoaded.value
+                          ? const Center(child: Text("Loading...."))
+                          : Column(
+                              children: todoCntrl.todoList
+                                  .map(
+                                    (e) => Container(
+                                      margin: EdgeInsets.all(10),
+                                      padding: EdgeInsets.all(10),
+                                      decoration:
+                                          BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Flexible(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                text: e.title.toString(),
+                                                style: TextStyle(
+                                                    color: Colors.black, fontSize: 18, fontWeight: FontWeight.normal),
+                                              ),
                                             ),
-                                            SizedBox(
-                                              width: 30,
+                                          ),
+                                          InkWell(
+                                            onTap: () {},
+                                            child: Container(
+                                              padding: EdgeInsets.all(10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue,
+                                                borderRadius: BorderRadius.circular(10),
+                                              ),
+                                              child: Center(
+                                                  child: IconButton(
+                                                onPressed: () {
+                                                  todoCntrl.deleteData(e.id);
+                                                },
+                                                icon: Icon(
+                                                  Icons.delete,
+                                                  color: Colors.white,
+                                                ),
+                                              )),
                                             ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                print(textController.text);
-                                                Get.back();
-                                              },
-                                              child: Text("YES"),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                          )
+                                        ],
+                                      ),
                                     ),
-                                  );
-                                },
-                                icon: Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                  size: 30,
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
-              itemCount: 4,
-            ))
+                                  )
+                                  .toList(),
+                            ),
+                    )),
+              ),
+            ),
           ],
         ),
-      )),
+      ),
     );
+
+    // Scaffold(
+    //   appBar: AppBar(
+    //     centerTitle: true,
+    //     backgroundColor: Colors.deepPurple[500],
+    //     title: Container(
+    //       child: Text(
+    //         "T O D O",
+    //         style: TextStyle(
+    //           color: Colors.white,
+    //         ),
+    //       ),
+    //     ),
+    //   ),
+    //   // bottomNavigationBar: Row(
+    //   //   mainAxisAlignment: MainAxisAlignment.center,
+    //   //   children: [
+    //   //     InkWell(
+    //   //       onTap: () {
+    //   //         addNewTodo(textController);
+    //   //       },
+    //   //       child: Container(
+    //   //         margin: EdgeInsets.all(10),
+    //   //         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+    //   //         decoration: BoxDecoration(color: Colors.deepPurple[500], borderRadius: BorderRadius.circular(10)),
+    //   //         child: Row(
+    //   //           children: [
+    //   //             Icon(
+    //   //               Icons.add,
+    //   //               size: 30,
+    //   //               color: Colors.white,
+    //   //             ),
+    //   //             SizedBox(
+    //   //               width: 30,
+    //   //             ),
+    //   //             Text(
+    //   //               "ADD NEW",
+    //   //               style:
+    //   //                   TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+    //   //             ),
+    //   //           ],
+    //   //         ),
+    //   //       ),
+    //   //     ),
+    //   //   ],
+    //   // ),
+    //   body: SafeArea(
+    //       child: Padding(
+    //     padding: const EdgeInsets.all(10.0),
+    //     child: Column(
+    //       children: [
+    //         Row(
+    //           children: [
+    //             Text(
+    //               "All Todos",
+    //               style: TextStyle(fontSize: 18, color: Colors.black45),
+    //             ),
+    //           ],
+    //         ),
+    //         Expanded(
+    //             child: ListView.builder(
+    //           itemBuilder: (context, index) {
+    //             return Obx(() => Column(
+    //                   children: todoCntrl.todoList
+    //                       .map(
+    //                         (e) => Container(
+    //                           decoration: BoxDecoration(
+    //                             color: Colors.deepPurple[500],
+    //                             borderRadius: BorderRadius.circular(10),
+    //                           ),
+    //                           padding: EdgeInsets.all(10),
+    //                           margin: EdgeInsets.all(10),
+    //                           child: Column(
+    //                             children: [
+    //                               Row(
+    //                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //                                 children: [
+    //                                   Row(
+    //                                     children: [
+    //                                       IconButton(
+    //                                         onPressed: () {
+    //                                           addNewTodo(textController);
+    //                                         },
+    //                                         icon: Icon(
+    //                                           Icons.add_circle,
+    //                                           color: Colors.white,
+    //                                           size: 30,
+    //                                         ),
+    //                                       ),
+    //                                       SizedBox(
+    //                                         width: 30,
+    //                                       ),
+    //                                       Text(
+    //                                         e.title.toString(),
+    //                                         style: TextStyle(fontSize: 20, color: Colors.white),
+    //                                       ),
+    //                                     ],
+    //                                   ),
+    //                                   Row(
+    //                                     children: [
+    //                                       IconButton(
+    //                                         onPressed: () {
+    //                                           editTodo(textController);
+    //                                         },
+    //                                         icon: Icon(
+    //                                           Icons.edit,
+    //                                           color: Colors.white,
+    //                                           size: 30,
+    //                                         ),
+    //                                       ),
+    //                                       IconButton(
+    //                                         onPressed: () {
+    //                                           Get.defaultDialog(
+    //                                             title: "Delete task",
+    //                                             content: Column(
+    //                                               crossAxisAlignment: CrossAxisAlignment.center,
+    //                                               children: [
+    //                                                 Row(
+    //                                                   children: [
+    //                                                     Text("Do you want to delete"),
+    //                                                   ],
+    //                                                 ),
+    //                                                 SizedBox(
+    //                                                   width: 30,
+    //                                                 ),
+    //                                                 Row(
+    //                                                   mainAxisAlignment: MainAxisAlignment.center,
+    //                                                   children: [
+    //                                                     OutlinedButton(
+    //                                                       onPressed: () {
+    //                                                         Get.back();
+    //                                                       },
+    //                                                       child: Text("NO"),
+    //                                                     ),
+    //                                                     SizedBox(
+    //                                                       width: 30,
+    //                                                     ),
+    //                                                     ElevatedButton(
+    //                                                       onPressed: () {
+    //                                                         print(textController.text);
+    //                                                         Get.back();
+    //                                                       },
+    //                                                       child: Text("YES"),
+    //                                                     ),
+    //                                                   ],
+    //                                                 ),
+    //                                               ],
+    //                                             ),
+    //                                           );
+    //                                         },
+    //                                         icon: Icon(
+    //                                           Icons.delete,
+    //                                           color: Colors.white,
+    //                                           size: 30,
+    //                                         ),
+    //                                       ),
+    //                                     ],
+    //                                   )
+    //                                 ],
+    //                               ),
+    //                             ],
+    //                           ),
+    //                         ),
+    //                       )
+    //                       .toList(),
+    //                 ));
+    //           },
+    //           itemCount: 4,
+    //         ))
+    //       ],
+    //     ),
+    //   )),
+    // );
   }
 }

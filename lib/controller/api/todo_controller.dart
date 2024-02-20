@@ -66,4 +66,22 @@ class TodoController extends GetxController {
       isLoaded.value = false;
     } else {}
   }
+
+  // Put Method for Editing or Updating the content to update a todo item by ID
+  Future<void> putData(id, String newTitle) async {
+    isLoaded.value = true;
+    final response = await http.put(
+      Uri.parse("https://65cde7cec715428e8b3f6b83.mockapi.io/api/todolist/$id"),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode(
+        {'title': newTitle},
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      todoList.clear();
+      getData();
+      isLoaded.value = false;
+    } else {}
+  }
 }

@@ -8,7 +8,9 @@ class TodoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextEditingController textController = TextEditingController();
+    TextEditingController editController = TextEditingController();
     TodoController todoCntrl = Get.put(TodoController());
+    bool isEdited = false;
     void MyBottomSheet() {
       Get.bottomSheet(Container(
         padding: EdgeInsets.all(30),
@@ -32,6 +34,7 @@ class TodoPage extends StatelessWidget {
               height: 30,
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   onPressed: () {
@@ -64,7 +67,7 @@ class TodoPage extends StatelessWidget {
               height: 50,
             ),
             Text(
-              "Task",
+              "T O D O",
               style: TextStyle(fontSize: 30, color: Colors.blue, fontWeight: FontWeight.bold),
             ),
             SizedBox(
@@ -84,60 +87,120 @@ class TodoPage extends StatelessWidget {
             SizedBox(
               height: 550,
               child: SingleChildScrollView(
-                child: InkWell(
-                    onTap: () {
-                      MyBottomSheet();
-                    },
-                    child: Obx(
-                      () => todoCntrl.isLoaded.value
-                          ? const Center(child: Text("Loading...."))
-                          : Column(
-                              children: todoCntrl.todoList
-                                  .map(
-                                    (e) => Container(
-                                      margin: EdgeInsets.all(10),
-                                      padding: EdgeInsets.all(10),
-                                      decoration:
-                                          BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Flexible(
-                                            child: RichText(
-                                              text: TextSpan(
-                                                text: e.title.toString(),
-                                                style: TextStyle(
-                                                    color: Colors.black, fontSize: 18, fontWeight: FontWeight.normal),
-                                              ),
+                child: Obx(
+                  () => todoCntrl.isLoaded.value
+                      ? const Center(child: CircularProgressIndicator())
+                      : Column(
+                          children: todoCntrl.todoList
+                              .map(
+                                (e) => InkWell(
+                                  onTap: () {
+                                    MyBottomSheet();
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.all(10),
+                                    padding: EdgeInsets.all(10),
+                                    decoration:
+                                        BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                          child: RichText(
+                                            text: TextSpan(
+                                              text: e.title.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.black, fontSize: 18, fontWeight: FontWeight.normal),
                                             ),
                                           ),
-                                          InkWell(
-                                            onTap: () {},
-                                            child: Container(
-                                              padding: EdgeInsets.all(10),
-                                              decoration: BoxDecoration(
-                                                color: Colors.blue,
-                                                borderRadius: BorderRadius.circular(10),
-                                              ),
-                                              child: Center(
-                                                  child: IconButton(
-                                                onPressed: () {
-                                                  todoCntrl.deleteData(e.id);
-                                                },
-                                                icon: Icon(
-                                                  Icons.delete,
-                                                  color: Colors.white,
+                                        ),
+                                        Row(
+                                          children: [
+                                            InkWell(
+                                              onTap: () {},
+                                              child: Container(
+                                                padding: EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue,
+                                                  borderRadius: BorderRadius.circular(5),
                                                 ),
-                                              )),
+                                                child: Center(
+                                                    child: IconButton(
+                                                  onPressed: () {
+                                                    editController.text = e.title
+                                                        .toString(); // Populate the dialog with the current title
+                                                    showDialog(
+                                                      context: context,
+                                                      builder: (BuildContext context) {
+                                                        return AlertDialog(
+                                                          title: Text('Edit Task'),
+                                                          content: TextFormField(
+                                                            controller: editController,
+                                                            decoration: InputDecoration(hintText: 'Enter new title'),
+                                                          ),
+                                                          actions: <Widget>[
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Get.back();
+                                                              },
+                                                              child: Text('CANCEL'),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                todoCntrl.putData(e.id, editController.text);
+                                                                Get.back();
+                                                              },
+                                                              child: Text('SAVE'),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      },
+                                                    );
+                                                  },
+
+                                                  // onPressed: () {
+                                                  //   todoCntrl.putData(e.id, e.title.toString());
+                                                  // },
+                                                  icon: Icon(
+                                                    Icons.edit,
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                              ),
                                             ),
-                                          )
-                                        ],
-                                      ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            InkWell(
+                                              onTap: () {},
+                                              child: Container(
+                                                padding: EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.blue,
+                                                  borderRadius: BorderRadius.circular(5),
+                                                ),
+                                                child: Center(
+                                                    child: IconButton(
+                                                  onPressed: () {
+                                                    todoCntrl.deleteData(e.id);
+                                                  },
+                                                  icon: Icon(
+                                                    Icons.delete,
+                                                    color: Colors.white,
+                                                  ),
+                                                )),
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
                                     ),
-                                  )
-                                  .toList(),
-                            ),
-                    )),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                ),
               ),
             ),
           ],
